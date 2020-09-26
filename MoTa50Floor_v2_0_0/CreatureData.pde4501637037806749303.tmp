@@ -1,0 +1,86 @@
+class Creature{
+    int index, hp, atk, def, gold;
+
+    Creature(int index, int hp, int atk, int def, int gold){
+        this.hp = hp;
+        this.atk = atk;
+        this.def = def;
+        this.gold = gold;
+        this.index = index;
+    }
+
+    boolean Combat(Creature opponent){
+        hp -= Math.max(opponent.atk-def,1);
+        return hp<=0;
+    }
+}
+
+class Braver extends Creature {
+    byte x = 5, y = 9;
+    byte direction = 1;
+
+    Braver(){ super(100,1000,10,10,0); }
+}
+
+class Monster extends Creature {
+    String name;
+    Monster(){
+      super(16,1000,10,10,0); 
+      name = "怪物名字";
+    }
+    Monster(short index, String name, int hp, int atk, int def, int gold){
+      super(index,hp, atk, def, gold); 
+      this.name = name;
+    }
+}
+
+class NPC{
+  
+}
+
+class CreatureData{
+  Braver braver;
+  Monster [] monster;
+  // NPC;
+  
+  CreatureData(){
+    braver = new Braver();
+    loadMonsterData();
+  }
+  
+  void loadMonsterData(){       // initial monster data  //<>//
+    monster = new Monster[35];
+       // initial monster data 
+    String[] fileData = loadStrings("..\\Data\\Monster\\MonsterData.txt");
+    for(int i=0; i<fileData.length; i++){
+      String line = fileData[i]; // capture each line of the file info
+      if(line.isEmpty()) continue;
+      
+      
+      int x = 0; // accout the number of world that have already been saved
+      monster[i] = new Monster();
+      for(int j=0; j<line.length(); j++){
+       
+        if(line.charAt(j) == ' ') continue;
+        String eachWord = new String();
+        eachWord = eachWord + line.charAt(j);
+        while(line.charAt(j+1) != ' '){
+          eachWord = eachWord +  line.charAt(j+1);
+          j++;
+        }
+        
+        switch(x){
+          case 0: monster[i].name = eachWord; break;
+          case 1: monster[i].hp = int(eachWord); break;
+          case 2: monster[i].att = int(eachWord); break;
+          case 3: monster[i].def = int(eachWord); break;
+          case 4: monster[i].gold = int(eachWord); break;
+          case 5: monster[i].imgIndex = int(eachWord); break;
+        }
+        x++;
+      }
+      
+    }
+  }
+  
+}

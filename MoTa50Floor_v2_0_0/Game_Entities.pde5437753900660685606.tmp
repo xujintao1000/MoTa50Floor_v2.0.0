@@ -1,0 +1,112 @@
+
+void initFloorArray(){
+    String[] floorData = loadStrings("..\\Data\\Floor\\FloorData.txt");
+    int x=0, y=0, floor =0;
+    for(int line=0; line<floorData.length; line++){
+      if(!floorData[line].isEmpty()){   // ckeck if empty line catch
+        if(y==13){
+          floor++;
+          y=0;
+        }
+        int i=0; // save the index of floorData after continue of looping 
+        while(i != floorData[line].length()){
+          if(floorData[line].charAt(i) != ' '){
+            String num = new String();
+            num = num + floorData[line].charAt(i);
+            while((i+1)<floorData[line].length() && floorData[line].charAt(i+1) != ' '){
+              num += floorData[line].charAt(i+1);
+              i++;
+            }
+            floorArray[floor][y][x] = int(num);
+            x++;
+          }
+          i++;
+        }
+        if(x!=0) y++;
+        x=0;
+      }
+    }
+}
+
+
+
+class ImageData {
+  private PImage ITEM, BACKGROUND, HINT; 
+  private int [][] itemLoc;   // init with 250 image location
+  
+  ImageData(){
+    itemLoc = new int[250][4];
+    ITEM = new PImage();
+    BACKGROUND = new PImage();
+    HINT = new PImage();
+   
+    ITEM = loadImage("..\\MoTa_Img\\Mota50Floor.png");
+    BACKGROUND = loadImage("..\\MoTa_Img\\Mota50Frame.png");
+    HINT = loadImage("..\\MoTa_Img\\BlueImage.png");
+    
+    String[] totalItemLoc = loadStrings("..\\Data\\Floor\\PictureLocation.txt");     // capture the each item location on item image
+    for(int i=0; i<totalItemLoc.length; i++){
+      if(totalItemLoc[i].isEmpty()) continue;
+      String[] currentLoc = split(totalItemLoc[i], ' ');
+      for(int j=0; j<4; j++){
+        itemLoc[int(currentLoc[5])][j] = int(currentLoc[j]); //  currentLoc[5] always save the fix item index 0-1 & 2-3 save the first and second x-y positions.
+      }
+    }
+  }
+  
+  void drawHintBackGround(int imgScale){
+    image(HINT,6*imgScale,48, imgScale*11, imgScale*6);
+  }
+  
+  void drawHideRectangle(int imgScale){
+    fill(128, 128,128);
+    rect(6*imgScale, imgScale, 11*imgScale, 11*imgScale);
+  }
+  
+  void drawItemImage(int index, int x, int y, int imgScale){                // draw fix Image onto gameBoard
+     x = (x+5)*imgScale;
+     y= y * imgScale;
+      image(ITEM,x,y,imgScale,imgScale,itemLoc[index][0], itemLoc[index][1], itemLoc[index][2], itemLoc[index][3]);
+  }
+  
+  void drawItemImage(int index, int x, int y, int imgScale, int frameRate){ // draw Animated Image onto gameBoard
+    frameRate= (frameRate%4)*32;
+     x = (x+5)*imgScale;
+     y= y * imgScale;
+      image(ITEM,x,y,imgScale,imgScale,itemLoc[index][0]+frameRate, itemLoc[index][1], itemLoc[index][2]+frameRate, itemLoc[index][3]);
+  }
+  
+  void drawImage(int index, int x, int y, int scale){
+    x = (x+5)*scale;
+    y= y * scale;
+    image(item,x,y,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+  
+  void drawMiniKey(int index, int x, int y, int scale){
+    index+=35; // input of index should be 1-3
+    image(item,x,y,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+  
+  void drawPixelPosition(int index, int x, int y, float scale, int frameRate){
+    frameRate*=32;
+    image(item,x,y,scale,scale,imageLoc[index][0]+frameRate, imageLoc[index][1], imageLoc[index][2]+frameRate, imageLoc[index][3]);
+  }
+  
+  
+  void drawGameBoard(){
+    image(backgroundImg,0,0);
+  }
+  
+  void drawBraverMovement(int index, int x, int y, int scale, int frameRate){
+    frameRate*=32;
+    image(item,x,y,scale,scale,imageLoc[index][0]+frameRate, imageLoc[index][1], imageLoc[index][2]+frameRate, imageLoc[index][3]);
+  }
+  
+  void drawBraverItem(int index, int pX, int pY, float scale){
+    image(item,pX,pY,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+  
+  void drawBraverItem(int index, float pX, float pY, float scale){
+    image(item,pX,pY,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+}

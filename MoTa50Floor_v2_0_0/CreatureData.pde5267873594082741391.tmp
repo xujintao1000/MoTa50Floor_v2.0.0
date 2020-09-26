@@ -1,0 +1,122 @@
+class Creature{
+    int index, hp, atk, def, gold;
+
+    Creature(int index, int hp, int atk, int def, int gold){
+        this.hp = hp;
+        this.atk = atk;
+        this.def = def;
+        this.gold = gold;
+        this.index = index;
+    }
+
+    boolean Combat(Creature opponent){
+        hp -= Math.max(opponent.atk-def,1);
+        return hp<=0;
+    }
+}
+
+
+//---Braver Class--------------------------------------------------------------------------------------------------
+class Braver extends Creature {
+    byte floor =1;
+    byte x = 5, y = 9;
+    byte direction = 1;
+    byte [] keyArray;        // 0- empty 1-yellow key, 2-blue key, 3-red key
+    Braver(){
+      super(100,1000,10,10,0); 
+      keyArray = new byte[40];  
+    }
+    
+
+    // Set Key List--(1-yellow, 2-blue, 3-red )
+    byte checkKeyExist(int keyIndex){      //  return -1 if not found the key on the keylist
+      for(int i=0; i<keyArray.length; i++){
+        if(keyArray[i] == keyIndex) return byte(keyIndex);
+      }
+      return -1;
+    }
+    
+    boolean removeKey(int keyIndex){
+      byte index = checkKeyExist(keyIndex);
+      if(index >= 0){
+        keyArray[index] = 0;
+        return true;       // successfully remove the key on the key list;
+      }
+      else{
+        if(showConsoleText) println("No corresponding key founded, unable to open the door.");
+        return false;  
+      }
+    }
+    
+    boolean addKey(int keyIndex){
+      for(int i=0; i<keyArray.length; i++){
+        if(keyArray[i] == 0){
+          keyArray[i] = byte(keyIndex); 
+          return true;
+        }
+      }
+      if(showConsoleText) println("Cannot add any more key at the moment");
+      return false;
+    }
+  
+    void showText(){    //Showing the braver status onto the UI page
+      fill(255);
+      textSize(18);
+      PFont font1 = createFont("Microsoft YaHei Bold",18);
+      textFont(font1);
+      textAlign(CENTER);
+      if (floor>9) {
+        text(floor, 103, 52);
+      } else text(floor, 104, 52);
+    
+      textSize(16);
+      textAlign(RIGHT);
+      text(hp, 134, 86);
+      text(atk, 134, 115);
+      text(def, 134, 143);
+      text(gold, 134, 171);
+    }
+}
+
+//---Monster Class-------------------------------------------------------------------------------------------------------------------------
+class Monster extends Creature {
+    String name;
+    Monster(){
+      super(16,1000,10,10,0); 
+      name = "怪物名字";
+    }
+    Monster(int index, String name, int hp, int atk, int def, int gold){
+      super(index,hp, atk, def, gold); 
+      this.name = name;
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------
+class NPC{
+  
+}
+
+class CreatureData{
+
+  Braver braver;
+  Monster [] monster;
+  Monster currentFightMonster;
+  // NPC;
+  
+  CreatureData(){
+    braver = new Braver();
+    loadMonsterData();
+    currentFightMonster = new Monster();
+  }
+  
+  void loadMonsterData(){       // initial monster data 
+    monster = new Monster[35];
+    String[] fileData = loadStrings("..\\Data\\Monster\\MonsterData.txt");
+    
+    for(int i=0; i<fileData.length; i++){
+      String [] line = split(fileData[i], ' ');
+      monster[i] = new Monster(int(line[5]), line[0],int(line[1]),int(line[2]), int(line[3]),int(line[4]));
+    } //<>// //<>//
+  }
+  
+}

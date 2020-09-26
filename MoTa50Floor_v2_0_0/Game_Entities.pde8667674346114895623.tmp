@@ -1,0 +1,120 @@
+
+void initFloorArray(){
+    String[] floorData = loadStrings("..\\Data\\Floor\\FloorData.txt");
+    int x=0, y=0, floor =0;
+    for(int line=0; line<floorData.length; line++)
+    {
+      if(floorData[line].isEmpty()) continue; // ckeck condition of out of scale
+      if(y==13){
+        floor++;
+        y=0;
+      }
+      
+      int i=0;
+      String floorLine = floorData[line];
+      
+      while(i != floorLine.length()){
+        if(floorLine.charAt(i) != ' '){
+          String num = new String();
+          num = num + floorLine.charAt(i);
+          
+          while((i+1)<floorLine.length() && floorLine.charAt(i+1) != ' '){
+            num = num + floorLine.charAt(i+1);
+            i++;
+          }
+          
+          
+          floorArray[floor][y][x] = int(num);
+          x++;
+            
+        }
+        i++;
+      }
+      if(x!=0) y++;
+      x=0;
+    }
+}
+
+
+
+class ImageData {
+  private PImage item,backgroundImg,blueImage; 
+  private int [][] imageLoc;   // init with 250 image location
+  
+  void initImg(){
+    imageLoc = new int[250][4];
+    item = new PImage();
+    backgroundImg = new PImage();
+    blueImage = new PImage();
+    
+    item = loadImage("..\\MoTa_Img\\Mota50Floor.png");
+    backgroundImg = loadImage("..\\MoTa_Img\\Mota50Frame.png");
+    blueImage = loadImage("..\\MoTa_Img\\BlueImage.png");
+    
+    String[] totalImgLoc = loadStrings("..\\Data\\Floor\\PictureLocation.txt");
+    //int index =0;
+    for(int i=0; i<totalImgLoc.length; i++){
+      if(totalImgLoc[i].isEmpty()) continue;
+      String[] currentLoc = split(totalImgLoc[i], ' ');
+      for(int j=0; j<4; j++){
+        imageLoc[int(currentLoc[5])][j] = int(currentLoc[j]);
+      }
+      
+    }
+  }
+  
+  
+  ImageData(){
+    initImg();
+  }
+  
+  void drawBlueBackGround(int scale){
+    image(blueImage,6*scale,48, scale*11, scale*6);
+  }
+  
+  void drawGrayRectangle(int imgScale){
+    fill(128, 128,128);
+    rect(6*imgScale, imgScale, 11*imgScale, 11*imgScale);
+  }
+  
+  void drawImage(int index, int x, int y, int scale, int frameRate){
+    frameRate= (frameRate%4)*32;
+     x = (x+5)*scale;
+     y= y * scale;
+      image(item,x,y,scale,scale,imageLoc[index][0]+frameRate, imageLoc[index][1], imageLoc[index][2]+frameRate, imageLoc[index][3]);
+  }
+  
+  void drawImage(int index, int x, int y, int scale){
+    x = (x+5)*scale;
+    y= y * scale;
+    image(item,x,y,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+  
+  void drawMiniKey(int index, int x, int y, int scale){
+    index+=35; // input of index should be 1-3
+    image(item,x,y,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+  
+  void drawPixelPosition(int index, int x, int y, float scale, int frameRate){
+    frameRate*=32;
+    image(item,x,y,scale,scale,imageLoc[index][0]+frameRate, imageLoc[index][1], imageLoc[index][2]+frameRate, imageLoc[index][3]);
+  }
+  
+  
+  void drawGameBoard(){
+    image(backgroundImg,0,0);
+  }
+  
+  void drawBraverMovement(int index, int x, int y, int scale, int frameRate){
+    frameRate*=32;
+    image(item,x,y,scale,scale,imageLoc[index][0]+frameRate, imageLoc[index][1], imageLoc[index][2]+frameRate, imageLoc[index][3]);
+  }
+  
+  void drawBraverItem(int index, int pX, int pY, float scale){
+    image(item,pX,pY,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+  
+  void drawBraverItem(int index, float pX, float pY, float scale){
+    image(item,pX,pY,scale,scale,imageLoc[index][0], imageLoc[index][1], imageLoc[index][2], imageLoc[index][3]);
+  }
+}

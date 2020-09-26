@@ -1,0 +1,228 @@
+class Creature{
+    int index, hp, atk, def, gold;
+
+    Creature(int index, int hp, int atk, int def, int gold){
+        this.hp = hp;
+        this.atk = atk;
+        this.def = def;
+        this.gold = gold;
+        this.index = index;
+    }
+    
+    boolean Combat(Creature opponent){
+        hp -= Math.max(opponent.atk-def,1);
+        return hp>0;   // return true if hp still have hp
+    }
+}
+
+
+//---Braver Class--------------------------------------------------------------------------------------------------
+class Braver extends Creature {
+    boolean isFighting = false;
+    boolean isMoving = false;
+    boolean moveable = true;
+    byte floor =1;
+    byte x = 6, y = 11;
+    byte face = 2;
+    byte [] keyArray;        // 0- empty 1-yellow key, 2-blue key, 3-red key
+    String [] swardName, shieldName;
+    byte sward, shield;
+    Braver(){
+      super(100,1000,10,10,0); 
+      keyArray = new byte[40];  
+      initSwardShield();
+    }
+    
+    
+    void upDateStatus(){
+      if(isFighting){
+        this.Combat(creatureData.currentFightMonster);
+        creatureData.currentFightMonster.Combat(this);
+      }
+    }
+    
+    
+    //****************** Braver Movement ***********************//
+    void moveBraver(int x, int y) {   // x and y are not the axis coordinate, but the change of x and y
+      int nextX = int(this.x) + x;
+      int nextY = int(this.y) + y;
+      int floorIndex = floorArray[floor][nextY][nextX];
+      if(checkIfMoveable(floorIndex)){
+      
+      }
+    }
+    
+    boolean checkIfMoveable(int floorIndex) {
+      // check if face with road, props, special event
+      for(int i=0; i<canPassFloorIndex.length; i++){
+        if(floorIndex == canPassFloorIndex[i]) return true;
+      }
+      // check if face with monster
+      if(checkIfFightable(floorIndex)){
+        this.isFighting = true;
+      }
+      
+      return false;
+    }
+    
+    //****************** Braver Fighting ***********************//
+    boolean checkIfFightable(int floorIndex){
+      boolean canFight =false;
+      
+      if(floorIndex>=105 && floorIndex<140){ // check if at correct monster index
+        creatureData.updateCurrentFightMonster(floorIndex);     // update the fighting monster data
+        while(this.Combat(creatureData.currentFightMonster) && creatureData.currentFightMonster).Combat(this) == false){
+          if(hp <= 0){
+            return false;  // Unable to fight with monster
+            if(showConsoleText) println("Too Strong, can not fight at the moment");
+          }  
+        }
+        creatureData.updateCurrentFightMonster(floorIndex);     // update the fighting monster data
+        this.isFighting = true;                                 // open the signal for fighting, so that each time when calling update funciton will automatic change the status for braver
+        return true;                                            // able to fight with monster 
+      }
+      return false; 
+    }
+     
+    
+    //****************** Braver KeyArray ***********************//
+    void initSwardShield(){
+      sward = 5;
+      shield = 5;
+      swardName = new String[6];
+      shieldName = new String[6];
+      String[] temp = loadStrings("..\\Data\\Sward-Shield.txt");
+      for(int i=0; i<6; i++) swardName[i] = temp[i];
+      for(int i=0; i<6; i++) shieldName[i] = temp[i+6];
+    }
+    
+    //****************** Braver KeyArray ***********************//
+    // Set  List--(1-yellow, 2-blue, 3-red )
+    byte checkKeyExist(int keyIndex){      //  return -1 if not found the key on the keylist
+      for(int i=0; i<keyArray.length; i++){
+        if(keyArray[i] == keyIndex) return byte(keyIndex);
+      }
+      return -1;
+    }
+    
+    boolean removeKey(int keyIndex){
+      byte index = checkKeyExist(keyIndex);
+      if(index >= 0){
+        keyArray[index] = 0;
+        return true;       // successfully remove the key on the key list;
+      }
+      else{
+        if(showConsoleText) println("No corresponding key founded, unable to open the door.");
+        return false;  
+      }
+    }
+    
+    boolean addKey(int keyIndex){
+      for(int i=0; i<keyArray.length; i++){
+        if(keyArray[i] == 0){
+          keyArray[i] = byte(keyIndex); 
+          return true;
+        }
+      }
+      if(showConsoleText) println("Cannot add any more key at the moment");
+      return false;
+    }
+    
+    
+    //******************* Braver Text ********************//
+    void showText(){    //Showing the braver status onto the UI interface
+      fill(255);
+      textSize(18);
+      PFont font1 = createFont("Microsoft YaHei Bold",18);
+      textFont(font1);
+      textAlign(CENTER);
+      if (floor>9) {
+        text(floor, 103, 52);
+      } else text(floor, 104, 52);
+      textSize(16);
+      textAlign(RIGHT);
+      text(hp, 134, 86);
+      text(atk, 134, 115);
+      text(def, 134, 143);
+      text(gold, 134, 171);
+      
+      // show sward & shield name and index on UI interface
+      textAlign(CENTER);
+      text(swardName[sward], 635, 69);
+      text(shieldName[shield], 635, 127);
+      if (sward !=0) imageData.drawItemImagePixel(sward+39,671, 30, imgScale*1.4);
+      if (shield !=0) imageData.drawItemImagePixel(shield+44, 670, 87, imgScale*1.4);
+    }
+}
+
+//---Monster Class-------------------------------------------------------------------------------------------------------------------------
+class Monster extends Creature {
+    String name;
+    Monster(){
+      super(16,1000,10,10,0); 
+      name = "怪物名字";
+    }
+    Monster(int index, String name, int hp, int atk, int def, int gold){
+      super(index,hp, atk, def, gold); 
+      this.name = name;
+    }
+    //******************* Monster Text ********************//
+    void showText(){    //Showing the Monster status onto the UI page
+      fill(255);
+      textSize(18);
+      PFont font1 = createFont("Microsoft YaHei Bold",18);
+      textFont(font1);
+      textAlign(CENTER);
+      text(name, 660, 314);
+      text(hp, 680, 338);
+      text(atk, 680, 362);
+      text(def, 680, 388);
+      //imageData.drawAnimatedImagePixel(index, 635, 245);
+  
+    }
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------
+class NPC{
+  
+}
+
+//---The dataSet of all creaters---------------------------------------------------------------------------------------------------------------
+class CreatureData{
+
+  Braver braver;
+  Monster [] monster;
+  Monster currentFightMonster;
+  // NPC;
+  
+  CreatureData(){
+    braver = new Braver();
+    currentFightMonster = new Monster();
+    loadMonsterData();
+    
+  }
+  
+  void loadMonsterData(){       // initial monster data 
+    monster = new Monster[35];
+    String[] fileData = loadStrings("..\\Data\\Monster\\MonsterData.txt");
+    
+    for(int i=0; i<fileData.length; i++){
+      String [] line = split(fileData[i], ' ');
+      monster[i] = new Monster(int(line[5]), line[0],int(line[1]),int(line[2]), int(line[3]),int(line[4]));
+    } //<>// //<>//
+  }
+  
+  void updateCurrentFightMonster(int monsterindex){
+    int arrayIndex = monsterindex-105;
+    currentFightMonster.name = monster[arrayIndex].name;
+    currentFightMonster.atk = monster[arrayIndex].atk;
+    currentFightMonster.def = monster[arrayIndex].def;
+    currentFightMonster.hp = monster[arrayIndex].hp;
+    currentFightMonster.gold = monster[arrayIndex].gold;
+  }
+  
+  void showUIText(){
+    currentFightMonster.showText();
+    braver.showText();
+  }
+}

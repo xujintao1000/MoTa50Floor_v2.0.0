@@ -1,0 +1,20 @@
+private int floorArray [][][] = new int[50][13][13];
+ImageData imageData;
+
+
+void setup() {
+  size(736, 416);
+  initVariable();
+  frameRate(20);
+}
+
+
+void draw(){
+  
+}
+
+void initVariable(){
+  imageData = new ImageData();
+  initFloorArray();   // initial variable of floorArray
+  
+}

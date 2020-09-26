@@ -1,0 +1,40 @@
+class Creature{
+    byte index;
+    short hp, atk, def, gold;
+
+    Creature(byte index, short hp, short atk, short def, short gold){
+        this.hp = hp;
+        this.atk = atk;
+        this.def = def;
+        this.gold = gold;
+        this.index = index;
+    }
+
+    boolean Combat(Creature opponent){
+        hp -= Math.max(opponent.atk-def,1);
+        return hp<=0;
+    }
+}
+
+class Braver extends Creature {
+    byte x = 5, y = 9;
+    byte direction = 0;
+
+    Braver(){ super((byte)100,(short)1000,(short)10,(short)10,(short)0); }
+}
+
+class Monster extends Creature {
+
+    Monster(byte index){ super(index,(short)1000,(short)10,(short)10,(short)0); }
+}
+
+class NPC{
+  
+}
+
+class CreatureData(){
+  Braver braver;
+  Monster [] monster;
+  NPC
+
+}

@@ -1,0 +1,64 @@
+class Creature{
+    int index, hp, atk, def, gold;
+
+    Creature(int index, int hp, int atk, int def, int gold){
+        this.hp = hp;
+        this.atk = atk;
+        this.def = def;
+        this.gold = gold;
+        this.index = index;
+    }
+
+    boolean Combat(Creature opponent){
+        hp -= Math.max(opponent.atk-def,1);
+        return hp<=0;
+    }
+}
+
+class Braver extends Creature {
+    byte floor =1;
+    byte x = 5, y = 9;
+    byte direction = 1;
+
+    Braver(){ super(100,1000,10,10,0); }
+}
+
+class Monster extends Creature {
+    String name;
+    Monster(){
+      super(16,1000,10,10,0); 
+      name = "怪物名字";
+    }
+    Monster(int index, String name, int hp, int atk, int def, int gold){
+      super(index,hp, atk, def, gold); 
+      this.name = name;
+    }
+}
+
+class NPC{
+  
+}
+
+class CreatureData{
+  Braver braver;
+  Monster [] monster;
+  Monster currentFightMonster;
+  // NPC;
+  
+  CreatureData(){
+    braver = new Braver();
+    loadMonsterData();
+    currentFightMonster = new Monster();
+  }
+  
+  void loadMonsterData(){       // initial monster data 
+    monster = new Monster[35];
+    String[] fileData = loadStrings("..\\Data\\Monster\\MonsterData.txt");
+    
+    for(int i=0; i<fileData.length; i++){
+      String [] line = split(fileData[i], ' ');
+      monster[i] = new Monster(int(line[5]), line[0],int(line[1]),int(line[2]), int(line[3]),int(line[4]));
+    } //<>// //<>//
+  }
+  
+}

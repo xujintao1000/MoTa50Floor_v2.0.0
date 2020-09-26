@@ -1,0 +1,110 @@
+private int floorArray [][][] = new int[50][13][13];
+ImageData imageData;
+CreatureData creatureData;
+
+
+void setup() {
+  size(736, 416);
+  frameRate(60);
+  initVariable();
+  
+}
+
+
+void draw(){
+  drawBackground();
+}
+
+
+void keyPressed() {
+  for(int i=0; i<creatureData.monster.length; i++){
+    println(creatureData.monster[i].index + " " + creatureData.monster[i].name + " " + creatureData.monster[i].hp + " " + creatureData.monster[i].atk + " " + creatureData.monster[i].def + " " + creatureData.monster[i].gold);
+  }
+}
+
+
+void drawBackground(){
+  imageData.drawBackGround();
+  drawText();
+  
+}
+
+void drawText() { // draw the UI interface 
+  // draw braver status information
+  fill(255);
+  textSize(18);
+  PFont font1 = createFont("Microsoft YaHei Bold",18);
+  textFont(font1);
+  textAlign(CENTER);
+  if (creatureData.braver.floor>9) {
+    text(creatureData.braver.floor, 103, 52);
+  } else text(creatureData.braver.floor, 104, 52);
+
+  textSize(16);
+  textAlign(RIGHT);
+  text(creatureData.braver.hp, 134, 86);
+  text(creatureData.braver.atk, 134, 115);
+  text(creatureData.braver.def, 134, 143);
+  text(creatureData.braver.gold, 134, 171);
+
+  // draw Monster information 
+  //int imgScale = gameBoard.imgScale;
+  textAlign(CENTER);
+  text(creatureData.currentFightMonster.name, 660, 314);
+  text(creatureData.currentFightMonster.hp, 680, 338);
+  text(creatureData.currentFightMonster.atk, 680, 362);
+  text(creatureData.currentFightMonster.def, 680, 388);
+  imageData.drawPixelPosition(creatureData.currentFightMonster.index, 635, 245, imgScale*1.3, gameBoard.imageFrameRate);
+
+  text(braver.swardName[braver.sward], 635, 69);
+  text(braver.shieldName[braver.shield], 635, 127);
+
+  if (braver.sward !=0) imageData.drawBraverItem(braver.sward+39, 671, 30, imgScale*1.4);
+  if (braver.shield !=0) imageData.drawBraverItem(braver.shield+44, 670, 87, imgScale*1.4);
+
+  if (gameBoard.showGrayBackGround) {
+    imageData.drawGrayRectangle(gameBoard.imgScale);
+  }
+
+  if (gameBoard.showBlueBackGround) {
+    fill(0);
+    imageData.drawBlueBackGround(imgScale);
+    npcMessage.showMessage(imgScale);
+  }
+}
+
+void initVariable(){
+  imageData = new ImageData();
+  creatureData = new CreatureData();
+  initFloorArray();   // initial variable of floorArray
+  
+}
+
+void initFloorArray(){
+    String[] floorData = loadStrings("..\\Data\\Floor\\FloorData.txt");
+    int x=0, y=0, floor =0;
+    for(int line=0; line<floorData.length; line++){
+      if(!floorData[line].isEmpty()){   // ckeck if empty line catch
+        if(y==13){
+          floor++;
+          y=0;
+        }
+        int i=0; // save the index of floorData after continue of looping 
+        while(i != floorData[line].length()){
+          if(floorData[line].charAt(i) != ' '){
+            String num = new String();
+            num = num + floorData[line].charAt(i);
+            while((i+1)<floorData[line].length() && floorData[line].charAt(i+1) != ' '){
+              num += floorData[line].charAt(i+1);
+              i++;
+            }
+            floorArray[floor][y][x] = int(num);
+            x++;
+          }
+          i++;
+        }
+        if(x!=0) y++;
+        x=0;
+      }
+    }
+}
